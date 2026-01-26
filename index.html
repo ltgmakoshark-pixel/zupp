@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Multi-Category Photo Viewer</title>
+<title>Photo Viewer</title>
 
 <style>
 html, body {
@@ -45,55 +45,60 @@ img {
 </head>
 <body>
 
-<img id="photo" src="photos/category1-1.jpg" alt="Photo Viewer">
+<img id="photo" src="photos/1.jpg" alt="Photo Viewer">
 
 <div class="tap-zone left" onclick="prevPhoto()"></div>
 <div class="tap-zone right" onclick="nextPhoto()"></div>
 
 <script>
 const categories = [
-    ["photos/category1-1.jpg", "photos/category1-2.jpg"],
-    ["photos/category2-1.jpg", "photos/category2-2.jpg"]
+    ["photos/1.jpg", "photos/2.jpg"], // Category 1
+    ["photos/3.jpg", "photos/4.jpg"]  // Category 2
 ];
 
 let currentCategory = 0;
-let currentPhoto = 0;
+let currentPhotoIndex = 0;
 
 const photo = document.getElementById("photo");
 
 function showPhoto() {
-    photo.src = categories[currentCategory][currentPhoto];
+    photo.src = categories[currentCategory][currentPhotoIndex];
 }
 
-// Tap left/right to switch photo within category
+// Tap left/right to cycle **within current category only**
 function nextPhoto() {
-    currentPhoto++;
-    if (currentPhoto >= categories[currentCategory].length) currentPhoto = 0;
+    currentPhotoIndex++;
+    if(currentPhotoIndex >= categories[currentCategory].length) {
+        currentPhotoIndex = 0;
+    }
     showPhoto();
 }
 
 function prevPhoto() {
-    currentPhoto--;
-    if (currentPhoto < 0) currentPhoto = categories[currentCategory].length - 1;
+    currentPhotoIndex--;
+    if(currentPhotoIndex < 0) {
+        currentPhotoIndex = categories[currentCategory].length - 1;
+    }
     showPhoto();
 }
 
-// Swipe left/right to switch category
+// Swipe left/right to switch categories
 let startX = 0;
 window.addEventListener("touchstart", e => {
     startX = e.touches[0].clientX;
 });
 window.addEventListener("touchend", e => {
-    let endX = e.changedTouches[0].clientX;
-    if (endX - startX > 50) switchCategory(-1);  // swipe right
-    else if (startX - endX > 50) switchCategory(1); // swipe left
+    const endX = e.changedTouches[0].clientX;
+    if(endX - startX > 50) switchCategory(-1);  // swipe right → previous category
+    else if(startX - endX > 50) switchCategory(1); // swipe left → next category
 });
 
 function switchCategory(direction) {
     currentCategory += direction;
-    if (currentCategory < 0) currentCategory = categories.length - 1;
-    else if (currentCategory >= categories.length) currentCategory = 0;
-    currentPhoto = 0; // reset photo index when switching category
+    if(currentCategory < 0) currentCategory = categories.length - 1;
+    else if(currentCategory >= categories.length) currentCategory = 0;
+
+    currentPhotoIndex = 0; // reset to first photo in new category
     showPhoto();
 }
 
