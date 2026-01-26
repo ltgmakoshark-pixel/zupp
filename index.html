@@ -8,39 +8,40 @@
 <title>Tap Photo Viewer</title>
 
 <style>
-html, body {
-    margin: 0;
-    padding: 0;
-    background: black;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    touch-action: manipulation;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+    /* Fullscreen body */
+    html, body {
+        margin: 0;
+        padding: 0;
+        background: black;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    user-select: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
+    /* Fullscreen image */
+    img {
+        width: 100vw;
+        height: 100vh;
+        object-fit: cover; /* fills screen, crops if needed */
+        user-select: none;
+    }
 
-.tap-zone {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 50%;
-    z-index: 10;
-}
+    /* Invisible tap zones */
+    .tap-zone {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 50%;
+        z-index: 10;
+    }
 
-.left { left: 0; }
-.right { right: 0; }
+    .left { left: 0; }
+    .right { right: 0; }
 
 </style>
 </head>
@@ -52,40 +53,40 @@ img {
 <div class="tap-zone right" onclick="next()"></div>
 
 <script>
-let current = 1;
-const total = 2; // number of photos
-const photo = document.getElementById("photo");
+    let current = 1;
+    const total = 2; // total number of photos
 
-function show() {
-    photo.src = `photos/${current}.jpg`;
-}
+    const photo = document.getElementById("photo");
 
-// Tap navigation
-function next() { current++; if(current > total) current = 1; show(); }
-function prev() { current--; if(current < 1) current = total; show(); }
+    function show() {
+        photo.src = `photos/${current}.jpg`;
+    }
 
-// Swipe navigation
-let startX = 0;
-window.addEventListener("touchstart", e => { startX = e.touches[0].clientX; });
-window.addEventListener("touchend", e => {
-    let endX = e.changedTouches[0].clientX;
-    if(endX - startX > 50) prev();       // swipe right
-    else if(startX - endX > 50) next();  // swipe left
-});
+    function next() {
+        current++;
+        if (current > total) current = 1;
+        show();
+    }
 
-// Adjust image to fill visible viewport dynamically
-function resizeImage() {
-    const vh = window.innerHeight; // visible height (excluding URL bar)
-    photo.style.height = `${vh}px`;
-}
+    function prev() {
+        current--;
+        if (current < 1) current = total;
+        show();
+    }
 
-window.addEventListener("resize", resizeImage);
-window.addEventListener("orientationchange", resizeImage);
-window.addEventListener("load", () => {
-    resizeImage();
-    // optional tiny scroll to hide top bar
-    setTimeout(() => window.scrollTo(0, 1), 100);
-});
+    // Hide mobile Safari URL bar on load
+    window.addEventListener("load", function() {
+        setTimeout(() => window.scrollTo(0, 1), 0);
+    });
+
+    // Optional: allow swipe left/right to change photos
+    let startX = 0;
+    window.addEventListener("touchstart", e => { startX = e.touches[0].clientX; });
+    window.addEventListener("touchend", e => {
+        let endX = e.changedTouches[0].clientX;
+        if (endX - startX > 50) prev();      // swipe right
+        else if (startX - endX > 50) next(); // swipe left
+    });
 
 </script>
 
