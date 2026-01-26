@@ -45,51 +45,52 @@ img {
 </head>
 <body>
 
-<img id="photo" src="photos/1.jpg" alt="Photo Viewer">
+<img id="photo" src="" alt="Photo Viewer">
 
 <div class="tap-zone left" onclick="prevPhoto()"></div>
 <div class="tap-zone right" onclick="nextPhoto()"></div>
 
 <script>
-const categories = [
-    ["photos/1.jpg", "photos/2.jpg"], // Category 1
-    ["photos/3.jpg", "photos/4.jpg"]  // Category 2
-];
+const totalPhotos = 4; // total images in your photos folder
+const photosPerCategory = 2; // how many photos in each category
+
+// Automatically generate categories
+const categories = [];
+for(let i = 0; i < totalPhotos; i += photosPerCategory) {
+    const category = [];
+    for(let j = 1; j <= photosPerCategory; j++) {
+        category.push(`photos/${i + j}.jpg`);
+    }
+    categories.push(category);
+}
 
 let currentCategory = 0;
 let currentPhotoIndex = 0;
-
 const photo = document.getElementById("photo");
 
 function showPhoto() {
     photo.src = categories[currentCategory][currentPhotoIndex];
 }
 
-// Tap left/right to cycle **within current category only**
+// Tap left/right to cycle within current category
 function nextPhoto() {
     currentPhotoIndex++;
-    if(currentPhotoIndex >= categories[currentCategory].length) {
-        currentPhotoIndex = 0;
-    }
+    if(currentPhotoIndex >= categories[currentCategory].length) currentPhotoIndex = 0;
     showPhoto();
 }
 
 function prevPhoto() {
     currentPhotoIndex--;
-    if(currentPhotoIndex < 0) {
-        currentPhotoIndex = categories[currentCategory].length - 1;
-    }
+    if(currentPhotoIndex < 0) currentPhotoIndex = categories[currentCategory].length - 1;
     showPhoto();
 }
 
-// Swipe left/right to switch categories
+// Swipe left/right to switch category
 let startX = 0;
-window.addEventListener("touchstart", e => {
-    startX = e.touches[0].clientX;
-});
+window.addEventListener("touchstart", e => startX = e.touches[0].clientX);
 window.addEventListener("touchend", e => {
     const endX = e.changedTouches[0].clientX;
-    if(endX - startX > 50) switchCategory(-1);  // swipe right → previous category
+    if(endX - startX > 50) switchCategory(-1);   // swipe right → previous category
     else if(startX - endX > 50) switchCategory(1); // swipe left → next category
 });
 
@@ -102,7 +103,7 @@ function switchCategory(direction) {
     showPhoto();
 }
 
-// Adjust image height to visible viewport
+// Resize image to fill viewport
 function resizeImage() {
     const vh = window.innerHeight;
     photo.style.height = `${vh}px`;
