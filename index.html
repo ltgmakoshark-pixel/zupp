@@ -2,57 +2,64 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Tap Photo Viewer</title>
 
 <style>
-    body {
+    /* Fullscreen body */
+    html, body {
         margin: 0;
+        padding: 0;
         background: black;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    /* Fullscreen image */
+    img {
+        width: 100vw;
         height: 100vh;
-        overflow: hidden;
+        object-fit: cover; /* fills screen, crops if needed */
         user-select: none;
     }
 
-    img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain; /* shows full image, no cropping */
-    }
-
+    /* Invisible tap zones */
     .tap-zone {
         position: absolute;
         top: 0;
         bottom: 0;
         width: 50%;
+        z-index: 10;
     }
 
-    .left {
-        left: 0;
-    }
+    .left { left: 0; }
+    .right { right: 0; }
 
-    .right {
-        right: 0;
-    }
 </style>
 </head>
-
 <body>
 
-<img id="photo" src="photos/1.jpg">
+<img id="photo" src="photos/1.jpg" alt="Photo Viewer">
 
 <div class="tap-zone left" onclick="prev()"></div>
 <div class="tap-zone right" onclick="next()"></div>
 
 <script>
     let current = 1;
-    const total = 2; // number of photos you have
+    const total = 2; // total number of photos
+
+    const photo = document.getElementById("photo");
 
     function show() {
-        document.getElementById("photo").src = `photos/${current}.jpg`;
+        photo.src = `photos/${current}.jpg`;
     }
 
     function next() {
@@ -66,6 +73,21 @@
         if (current < 1) current = total;
         show();
     }
+
+    // Hide mobile Safari URL bar on load
+    window.addEventListener("load", function() {
+        setTimeout(() => window.scrollTo(0, 1), 0);
+    });
+
+    // Optional: allow swipe left/right to change photos
+    let startX = 0;
+    window.addEventListener("touchstart", e => { startX = e.touches[0].clientX; });
+    window.addEventListener("touchend", e => {
+        let endX = e.changedTouches[0].clientX;
+        if (endX - startX > 50) prev();      // swipe right
+        else if (startX - endX > 50) next(); // swipe left
+    });
+
 </script>
 
 </body>
