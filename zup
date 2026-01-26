@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tap Photo Viewer</title>
+
+<style>
+    body {
+        margin: 0;
+        background: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+        user-select: none;
+    }
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain; /* shows full image, no cropping */
+    }
+
+    .tap-zone {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 50%;
+    }
+
+    .left {
+        left: 0;
+    }
+
+    .right {
+        right: 0;
+    }
+</style>
+</head>
+
+<body>
+
+<img id="photo" src="photos/1.jpg">
+
+<div class="tap-zone left" onclick="prev()"></div>
+<div class="tap-zone right" onclick="next()"></div>
+
+<script>
+    let current = 1;
+    const total = 5; // number of photos you have
+
+    function show() {
+        document.getElementById("photo").src = `photos/${current}.jpg`;
+    }
+
+    function next() {
+        current++;
+        if (current > total) current = 1;
+        show();
+    }
+
+    function prev() {
+        current--;
+        if (current < 1) current = total;
+        show();
+    }
+</script>
+
+</body>
+</html>
